@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CareCloud Voice AI - Patient Registration System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <header class="header">
+      <div class="brand">
+        <div class="brand-logo">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+            <line x1="12" x2="12" y1="19" y2="22"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>CareCloud Patient Registration AI</h1>
+          <p class="subtitle">Voice Intake Coordinator • Powered by FastAPI</p>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="phone-chip">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M6.62 10.79a15.053 15.053 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24c1.12.37 2.33.57 3.58.57a1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.46.57 3.58a1 1 0 01-.25 1.01l-2.2 2.2z"/>
+          </svg>
+          <span id="header-phone-number">+1 (202) 555-0193</span>
+        </div>
+        <div class="status-chip" id="connection-chip">
+          <span class="status-dot" id="status-dot"></span>
+          <span id="status-text">Ready to Call</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <!-- Voice Visualizer Card -->
+      <section class="visualizer-card">
+        <div class="visualizer-wrapper">
+          <div class="pulse-ring ring-1"></div>
+          <div class="pulse-ring ring-2"></div>
+          <div class="pulse-ring ring-3"></div>
+          <div class="orb-container" id="orb-visualizer">
+            <div class="orb-core">
+              <svg id="mic-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                <line x1="12" x2="12" y1="19" y2="22"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="call-info">
+          <h2 id="agent-state-label">Tap to start patient registration call</h2>
+          <p class="phone-prompt">Call via phone at <strong id="hero-phone-number">+1 (202) 555-0193</strong> or click below to speak in-browser</p>
+          <p id="call-timer" class="call-timer">00:00</p>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls-bar">
+          <button id="call-btn" class="btn btn-primary">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M6.62 10.79a15.053 15.053 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24c1.12.37 2.33.57 3.58.57a1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.46.57 3.58a1 1 0 01-.25 1.01l-2.2 2.2z"/>
+            </svg>
+            <span>Start Voice Call</span>
+          </button>
+
+          <button id="hangup-btn" class="btn btn-danger hidden">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.58.9-1.04.48-1.98 1.13-2.8 1.9-.27.26-.66.36-1.01.25L.4 14.97a1.003 1.003 0 01-.73-1.19C1.1 6.54 6.98 2 12 2s10.9 4.54 12.33 11.78c.08.43-.16.86-.56 1.06l-2.61.9c-.35.12-.74.02-1.01-.24-.82-.77-1.76-1.42-2.8-1.9-.35-.16-.58-.51-.58-.9v-3.1C15.15 9.25 13.6 9 12 9z"/>
+            </svg>
+            <span>End Call</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Live Transcript Section -->
+      <section class="transcript-section">
+        <div class="transcript-header">
+          <h3>Live Conversation Transcript</h3>
+          <span class="transcript-badge">Real-time</span>
+        </div>
+        <div class="transcript-body" id="transcript-container">
+          <div class="transcript-placeholder" id="transcript-placeholder">
+            <p>Your conversation messages and agent responses appear here live during the call.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Patient Database Dashboard (Bonus Feature) -->
+      <section class="dashboard-section">
+        <div class="dashboard-header">
+          <div>
+            <h3>Registered Patients (Database Records)</h3>
+            <p class="subtitle">Persisted in SQLite • Available across calls & server restarts</p>
+          </div>
+          <button id="refresh-patients-btn" class="btn-sm">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+            </svg>
+            <span>Refresh</span>
+          </button>
+        </div>
+
+        <div class="table-container">
+          <table class="patients-table">
+            <thead>
+              <tr>
+                <th>Patient Name</th>
+                <th>DOB</th>
+                <th>Sex</th>
+                <th>Phone</th>
+                <th>Location</th>
+                <th>Insurance</th>
+                <th>Registered</th>
+              </tr>
+            </thead>
+            <tbody id="patients-table-body">
+              <tr>
+                <td colspan="7" class="loading-cell">Loading patient records...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Agent ID: <span id="footer-agent-id">loading...</span> • API Docs: <a href="/docs" target="_blank">FastAPI Swagger UI</a> • REST Endpoints: <code>/patients</code></p>
+    </footer>
+  </div>
+
+  <script type="module" src="/static/app.js"></script>
+</body>
+</html>
